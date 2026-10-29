@@ -218,6 +218,27 @@ install_packages() {
 install_packages bash gcompat glib nano
 first_identity_setup
 
+# OpenCode is installed lazily on the first Alpine start so the normal
+# terminal remains usable when the device is offline. Once installed, keep a
+# local server available for the in-app WebView on loopback:4123.
+setup_opencode() {
+    if [ ! -x /usr/bin/opencode ] && [ ! -x /usr/local/bin/opencode ]; then
+        echo -e "\e[34;1m[*]\e[0m Installing OpenCode dependencies"
+        if apk add --no-cache nodejs npm && npm install -g @opencode/cli; then
+            echo -e "\e[32;1m[+]\e[0m OpenCode installed"
+        else
+            echo -e "\e[33;1m[!]\e[0m OpenCode installation failed; retry from the terminal with: npm install -g @opencode/cli"
+            return 1
+        fi
+    fi
+
+    if command -v opencode >/dev/null 2>&1 && ! pgrep -f 'opencode serve --port 4123' >/dev/null 2>&1; then
+        nohup opencode serve --port 4123 --hostname 127.0.0.1 >/tmp/opencode.log 2>&1 &
+    fi
+}
+
+setup_opencode || true
+
 # Fix Android linker warning in some proot builds.
 if [ ! -f /linkerconfig/ld.config.txt ]; then
     mkdir -p /linkerconfig
