@@ -65,7 +65,13 @@ fun UpdateStatusBar(mainActivityActivity: MainActivity,show: Boolean = true){
 fun MainActivityNavHost(modifier: Modifier = Modifier,navController: NavHostController,mainActivity: MainActivity) {
     NavHost(
         navController = navController,
-        startDestination = MainActivityRoutes.MainScreen.route,
+        // Once Alpine is available, OpenCode is the app's primary surface.
+        // Keep the downloader as the first-run entry point until the rootfs exists.
+        startDestination = if (Rootfs.isDownloaded.value) {
+            MainActivityRoutes.OpenCode.route
+        } else {
+            MainActivityRoutes.MainScreen.route
+        },
         enterTransition = { NavigationAnimationTransitions.enterTransition },
         exitTransition = { NavigationAnimationTransitions.exitTransition },
         popEnterTransition = { NavigationAnimationTransitions.popEnterTransition },
