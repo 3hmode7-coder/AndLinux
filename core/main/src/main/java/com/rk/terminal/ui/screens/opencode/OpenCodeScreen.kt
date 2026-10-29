@@ -86,7 +86,10 @@ fun OpenCodeScreen() {
             settings.domStorageEnabled = true
             settings.allowFileAccess = false
             settings.cacheMode = WebSettings.LOAD_DEFAULT
-            loadUrl("http://127.0.0.1:4123")
+            // OpenCode v2 consumes this token in the SPA and keeps the
+            // credentials in memory, so no server URL or password prompt is
+            // shown to the user.
+            loadUrl("http://127.0.0.1:4123/?auth_token=b3BlbmNvZGU6YW5kbGludXgtbG9jYWwtb3BlbmNvZGU")
         }
     }
     DisposableEffect(webView) {
