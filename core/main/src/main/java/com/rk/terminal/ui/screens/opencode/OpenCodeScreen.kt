@@ -18,8 +18,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun OpenCodeScreen() {
+    val context = LocalContext.current
     val webView = remember {
-        WebView(LocalContext.current).apply {
+        WebView(context).apply {
             setBackgroundColor(Color.TRANSPARENT)
             webViewClient = WebViewClient()
             webChromeClient = WebChromeClient()
