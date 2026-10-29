@@ -1,6 +1,8 @@
 package com.rk.terminal.ui.screens.opencode
 
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.graphics.Color
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
@@ -10,6 +12,8 @@ import android.webkit.WebViewClient
 import android.webkit.HttpAuthHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Button
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,6 +27,11 @@ import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -95,7 +104,25 @@ fun OpenCodeScreen() {
     DisposableEffect(webView) {
         onDispose { webView.stopLoading(); webView.destroy() }
     }
-    AndroidView(factory = { webView }, modifier = Modifier.fillMaxSize(), update = {
-        it.layoutParams = ViewGroup.LayoutParams(-1, -1)
-    })
+    Box(Modifier.fillMaxSize()) {
+        AndroidView(factory = { webView }, modifier = Modifier.fillMaxSize(), update = {
+            it.layoutParams = ViewGroup.LayoutParams(-1, -1)
+        })
+        Surface(
+            modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
+            color = ComposeColor(0xEE202124)
+        ) {
+            Column(Modifier.padding(10.dp)) {
+                Text("OpenCode server", color = ComposeColor.White)
+                Text("URL: http://127.0.0.1:4123", color = ComposeColor.White)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Password: andlinux-local-opencode", color = ComposeColor.White, modifier = Modifier.weight(1f))
+                    Button(onClick = {
+                        val clipboard = context.getSystemService(ClipboardManager::class.java)
+                        clipboard?.setPrimaryClip(ClipData.newPlainText("OpenCode password", "andlinux-local-opencode"))
+                    }) { Text("Copy") }
+                }
+            }
+        }
+    }
 }
