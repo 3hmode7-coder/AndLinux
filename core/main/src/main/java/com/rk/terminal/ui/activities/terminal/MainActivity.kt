@@ -27,6 +27,9 @@ import com.rk.terminal.service.SessionService
 import com.rk.terminal.ui.navHosts.MainActivityNavHost
 import com.rk.terminal.ui.routes.MainActivityRoutes
 import com.rk.terminal.ui.screens.terminal.terminalView
+import com.rk.terminal.ui.screens.terminal.Rootfs
+import com.rk.terminal.ui.screens.settings.WorkingMode
+import com.rk.terminal.ui.screens.opencode.HeadlessTerminalClient
 import com.rk.terminal.ui.theme.KarbonTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,6 +44,10 @@ class MainActivity : ComponentActivity() {
             val binder = service as SessionService.SessionBinder
             sessionBinder = binder
             isBound = true
+
+            if (Rootfs.isDownloaded.value && binder.getService().getSession("opencode") == null) {
+                binder.createSession("opencode", HeadlessTerminalClient(this@MainActivity), this@MainActivity, WorkingMode.ALPINE)
+            }
 
             lifecycleScope.launch(Dispatchers.Main){
                 setContent {
