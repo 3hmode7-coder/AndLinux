@@ -232,6 +232,14 @@ setup_opencode() {
         fi
     fi
 
+    if command -v opencode >/dev/null 2>&1; then
+        # Replace an older/random-password instance so the WebView token and
+        # the server always use the same credentials after an app update.
+        for pid in $(ps | awk '/[o]pencode serve --port 4123/ {print $1}'); do
+            kill "$pid" 2>/dev/null || true
+        done
+        sleep 1
+    fi
     if command -v opencode >/dev/null 2>&1 && ! ps | grep -q '[o]pencode serve --port 4123'; then
         OPENCODE_SERVER_PASSWORD='andlinux-local-opencode' \
             nohup opencode serve --port 4123 --hostname 127.0.0.1 >/tmp/opencode.log 2>&1 &
