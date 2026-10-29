@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
             sessionBinder = binder
             isBound = true
 
-            if (Rootfs.isDownloaded.value && binder.getService().getSession("opencode") == null) {
+            if (Rootfs.isDownloaded.value && !binder.getService().sessionList.containsKey("opencode")) {
                 binder.createSession("opencode", HeadlessTerminalClient(this@MainActivity), this@MainActivity, WorkingMode.ALPINE)
             }
 
