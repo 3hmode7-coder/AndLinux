@@ -158,6 +158,14 @@ fun Settings(modifier: Modifier = Modifier,navController: NavController,mainActi
             }
         }
 
+        PreferenceGroup(heading = "OpenCode") {
+            SettingsCard(
+                title = { Text("OpenCode AI") },
+                description = { Text("Open the local OpenCode interface in the app WebView") },
+                onClick = { navController.navigate(MainActivityRoutes.OpenCode.route) }
+            )
+        }
+
 
         PreferenceGroup {
             SettingsToggle(
