@@ -46,7 +46,15 @@ class MainActivity : ComponentActivity() {
             isBound = true
 
             if (Rootfs.isDownloaded.value && !binder.getService().sessionList.containsKey("opencode")) {
-                binder.createSession("opencode", HeadlessTerminalClient(this@MainActivity), this@MainActivity, WorkingMode.ALPINE)
+                val session = binder.createSession(
+                    "opencode",
+                    HeadlessTerminalClient(this@MainActivity),
+                    this@MainActivity,
+                    WorkingMode.ALPINE
+                )
+                // TerminalSession starts the PTY from updateSize(). Use a
+                // small invisible viewport; no TerminalView is attached.
+                session.updateSize(80, 24, 8, 16)
             }
 
             lifecycleScope.launch(Dispatchers.Main){
