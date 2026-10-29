@@ -45,6 +45,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 fun OpenCodeScreen() {
     val context = LocalContext.current
     var serverReady by remember { mutableStateOf(false) }
+    var pageLoaded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         repeat(60) {
@@ -81,6 +82,11 @@ fun OpenCodeScreen() {
         WebView(context).apply {
             setBackgroundColor(Color.TRANSPARENT)
             webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    pageLoaded = true
+                }
+
                 override fun onReceivedHttpAuthRequest(
                     view: WebView?, handler: HttpAuthHandler?, host: String?, realm: String?
                 ) {
@@ -116,7 +122,7 @@ fun OpenCodeScreen() {
         AndroidView(factory = { webView }, modifier = Modifier.fillMaxSize(), update = {
             it.layoutParams = ViewGroup.LayoutParams(-1, -1)
         })
-        Surface(
+        if (!pageLoaded) Surface(
             modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
             color = ComposeColor(0xEE202124)
         ) {
