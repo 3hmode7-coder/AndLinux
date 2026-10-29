@@ -3,6 +3,7 @@ package com.rk.terminal.ui.screens.opencode
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.util.Base64
 import android.graphics.Color
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
@@ -98,7 +99,14 @@ fun OpenCodeScreen() {
             // OpenCode v2 consumes this token in the SPA and keeps the
             // credentials in memory, so no server URL or password prompt is
             // shown to the user.
-            loadUrl("http://127.0.0.1:4123/?auth_token=b3BlbmNvZGU6YW5kbGludXgtbG9jYWwtb3BlbmNvZGU")
+            val credentials = Base64.encodeToString(
+                "opencode:andlinux-local-opencode".toByteArray(Charsets.UTF_8),
+                Base64.NO_WRAP
+            )
+            loadUrl(
+                "http://127.0.0.1:4123/?auth_token=b3BlbmNvZGU6YW5kbGludXgtbG9jYWwtb3BlbmNvZGU",
+                mapOf("Authorization" to "Basic $credentials")
+            )
         }
     }
     DisposableEffect(webView) {
