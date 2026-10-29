@@ -8,6 +8,20 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.HttpAuthHandler
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color as ComposeColor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -20,6 +34,39 @@ import androidx.compose.ui.viewinterop.AndroidView
 @Composable
 fun OpenCodeScreen() {
     val context = LocalContext.current
+    var serverReady by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        repeat(60) {
+            val ready = withContext(Dispatchers.IO) {
+                runCatching {
+                    (URL("http://127.0.0.1:4123").openConnection() as HttpURLConnection).run {
+                        connectTimeout = 500
+                        readTimeout = 500
+                        requestMethod = "GET"
+                        connect()
+                        responseCode in 200..499
+                    }
+                }.getOrDefault(false)
+            }
+            if (ready) {
+                serverReady = true
+                return@LaunchedEffect
+            }
+            delay(500)
+        }
+    }
+
+    if (!serverReady) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            androidx.compose.foundation.layout.Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                CircularProgressIndicator()
+                Text("Starting OpenCode…", color = ComposeColor.White)
+            }
+        }
+        return
+    }
+
     val webView = remember {
         WebView(context).apply {
             setBackgroundColor(Color.TRANSPARENT)
