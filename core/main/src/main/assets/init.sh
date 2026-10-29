@@ -233,7 +233,8 @@ setup_opencode() {
     fi
 
     if command -v opencode >/dev/null 2>&1 && ! ps | grep -q '[o]pencode serve --port 4123'; then
-        nohup opencode serve --port 4123 --hostname 127.0.0.1 >/tmp/opencode.log 2>&1 &
+        OPENCODE_SERVER_PASSWORD='andlinux-local-opencode' \
+            nohup opencode serve --port 4123 --hostname 127.0.0.1 >/tmp/opencode.log 2>&1 &
     fi
 }
 

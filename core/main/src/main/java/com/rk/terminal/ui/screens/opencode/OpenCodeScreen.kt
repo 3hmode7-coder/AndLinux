@@ -7,6 +7,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.webkit.HttpAuthHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -22,7 +23,17 @@ fun OpenCodeScreen() {
     val webView = remember {
         WebView(context).apply {
             setBackgroundColor(Color.TRANSPARENT)
-            webViewClient = WebViewClient()
+            webViewClient = object : WebViewClient() {
+                override fun onReceivedHttpAuthRequest(
+                    view: WebView?, handler: HttpAuthHandler?, host: String?, realm: String?
+                ) {
+                    if (host == "127.0.0.1" || host == "localhost") {
+                        handler?.proceed("opencode", "andlinux-local-opencode")
+                    } else {
+                        handler?.cancel()
+                    }
+                }
+            }
             webChromeClient = WebChromeClient()
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
