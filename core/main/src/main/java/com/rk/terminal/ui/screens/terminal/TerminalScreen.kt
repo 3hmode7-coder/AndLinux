@@ -11,6 +11,7 @@ import android.widget.EditText
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -145,7 +146,29 @@ var showToolbar = mutableStateOf(Settings.toolbar)
 var showVirtualKeys = mutableStateOf(Settings.virtualKeys)
 var showHorizontalToolbar = mutableStateOf(Settings.toolbar_in_horizontal)
 
-
+fun getTerminalBackgroundColor(themeName: String, isDark: Boolean): androidx.compose.ui.graphics.Color {
+    return when (themeName) {
+        "Dracula" -> androidx.compose.ui.graphics.Color(0xFF282A36)
+        "Nord" -> androidx.compose.ui.graphics.Color(0xFF2E3440)
+        "Solarized Dark" -> androidx.compose.ui.graphics.Color(0xFF002B36)
+        "Solarized Light" -> androidx.compose.ui.graphics.Color(0xFFFDF6E3)
+        "Gruvbox Dark" -> androidx.compose.ui.graphics.Color(0xFF282828)
+        "Gruvbox Light" -> androidx.compose.ui.graphics.Color(0xFFFBF1C7)
+        "One Dark" -> androidx.compose.ui.graphics.Color(0xFF282C34)
+        "Tokyo Night" -> androidx.compose.ui.graphics.Color(0xFF1A1B26)
+        "Tokyo Night Light" -> androidx.compose.ui.graphics.Color(0xFFD5D6DB)
+        "Catppuccin Mocha" -> androidx.compose.ui.graphics.Color(0xFF1E1E2E)
+        "Catppuccin Latte" -> androidx.compose.ui.graphics.Color(0xFFEFF1F5)
+        "Monokai" -> androidx.compose.ui.graphics.Color(0xFF272822)
+        "Material Dark" -> androidx.compose.ui.graphics.Color(0xFF212121)
+        "Ayu Dark" -> androidx.compose.ui.graphics.Color(0xFF0A0E14)
+        "Ayu Light" -> androidx.compose.ui.graphics.Color(0xFFFAFAFA)
+        "Matrix" -> androidx.compose.ui.graphics.Color(0xFF0D1117)
+        "Cyberpunk" -> androidx.compose.ui.graphics.Color(0xFF120458)
+        "OLED Black" -> androidx.compose.ui.graphics.Color(0xFF000000)
+        else -> if (isDark) androidx.compose.ui.graphics.Color(0xFF121212) else androidx.compose.ui.graphics.Color(0xFFF5F5F5)
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -323,6 +346,17 @@ fun TerminalScreen(
                             Row {
                                 val keyboardController = LocalSoftwareKeyboardController.current
                                 IconButton(onClick = {
+                                    navController.navigate(MainActivityRoutes.Customization.route)
+                                    keyboardController?.hide()
+                                }) {
+                                    Icon(
+                                        painter = androidx.compose.ui.res.painterResource(id = com.rk.resources.drawables.ic_palette),
+                                        contentDescription = "Appearance",
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
+
+                                IconButton(onClick = {
                                     navController.navigate(MainActivityRoutes.Settings.route)
                                     keyboardController?.hide()
                                 }) {
@@ -401,158 +435,187 @@ fun TerminalScreen(
 
             },
             content = {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        BackgroundImage()
-                        val color = getComposeColor()
-                        Column {
+                val terminalBg = getTerminalBackgroundColor(Settings.terminal_theme, isDarkMode)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background),
+                    contentAlignment = Alignment.Center
+                ) {
+                    BackgroundImage()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(terminalBg.copy(alpha = Settings.terminal_background_opacity))
+                    )
+                    val color = getComposeColor()
+                    Column {
 
-                            fun getNameOfWorkingMode(workingMode:Int?):String{
-                                return when(workingMode){
-                                    0 -> "ALPINE".lowercase()
-                                    1 -> "ANDROID".lowercase()
-                                    null -> "null"
-                                    else -> "unknown"
-                                }
+                        fun getNameOfWorkingMode(workingMode:Int?):String{
+                            return when(workingMode){
+                                0 -> "ALPINE".lowercase()
+                                1 -> "ANDROID".lowercase()
+                                null -> "null"
+                                else -> "unknown"
                             }
+                        }
 
 
-                            if (showToolbar.value && (LocalConfiguration.current.orientation != Configuration.ORIENTATION_LANDSCAPE || showHorizontalToolbar.value)){
-                                TopAppBar(
-                                    colors = TopAppBarDefaults.topAppBarColors(
-                                        containerColor = androidx.compose.ui.graphics.Color.Transparent,
-                                        scrolledContainerColor = androidx.compose.ui.graphics.Color.Transparent
-                                    ),
-                                    title = {
-                                        Column {
-                                            Text(text = "AndLinux", color = color)
-                                            // Null-safe session title. sessionBinder is normally bound
-                                            // by the time TerminalScreen is composed, but defensive
-                                            // null-handling avoids an NPE in the title bar if the
-                                            // service disconnects mid-render.
-                                            val sessionInfo = mainActivityActivity.sessionBinder
-                                                ?.getService()?.currentSession?.value
-                                            val sessionId = sessionInfo?.first ?: "—"
-                                            val sessionMode = getNameOfWorkingMode(sessionInfo?.second)
-                                            Text(
-                                                style = MaterialTheme.typography.bodySmall,
-                                                text = "$sessionId ($sessionMode)",
-                                                color = color,
+                        if (showToolbar.value && (LocalConfiguration.current.orientation != Configuration.ORIENTATION_LANDSCAPE || showHorizontalToolbar.value)){
+                            TopAppBar(
+                                colors = TopAppBarDefaults.topAppBarColors(
+                                    containerColor = androidx.compose.ui.graphics.Color.Transparent,
+                                    scrolledContainerColor = androidx.compose.ui.graphics.Color.Transparent
+                                ),
+                                title = {
+                                    Column {
+                                        Text(text = "AndLinux", color = color)
+                                        // Null-safe session title. sessionBinder is normally bound
+                                        // by the time TerminalScreen is composed, but defensive
+                                        // null-handling avoids an NPE in the title bar if the
+                                        // service disconnects mid-render.
+                                        val sessionInfo = mainActivityActivity.sessionBinder
+                                            ?.getService()?.currentSession?.value
+                                        val sessionId = sessionInfo?.first ?: "—"
+                                        val sessionMode = getNameOfWorkingMode(sessionInfo?.second)
+                                        Text(
+                                            style = MaterialTheme.typography.bodySmall,
+                                            text = "$sessionId ($sessionMode)",
+                                            color = color,
+                                        )
+                                    }
+                                },
+                                navigationIcon = {
+                                    IconButton(onClick = {
+                                        scope.launch { drawerState.open() }
+                                    }) {
+                                        Icon(Icons.Default.Menu, null, tint = color)
+                                    }
+                                },
+                                actions = {
+                                    IconButton(onClick = {
+                                        navController.navigate(MainActivityRoutes.Customization.route)
+                                    }) {
+                                        Icon(
+                                            painter = androidx.compose.ui.res.painterResource(id = com.rk.resources.drawables.ic_palette),
+                                            contentDescription = "Appearance",
+                                            tint = color,
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                    }
+                                    IconButton(onClick = {
+                                        showAddDialog = true
+                                    }) {
+                                        Icon(Icons.Default.Add,null, tint = color)
+                                    }
+                                }
+                            )
+                        }
+
+                        val density = LocalDensity.current
+                        Column(modifier = Modifier.imePadding().navigationBarsPadding().padding(top = if (showToolbar.value){0.dp}else{
+                            with(density){
+                                TopAppBarDefaults.windowInsets.getTop(density).toDp()
+                            }
+                        })) {
+                            AndroidView(
+                                factory = { context ->
+                                    TerminalView(context, null).apply {
+                                        terminalView = WeakReference(this)
+                                        setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                                        setTextSize(
+                                            dpToPx(
+                                                Settings.terminal_font_size.toFloat(),
+                                                context
                                             )
+                                        )
+                                        val client = TerminalBackEnd(this, mainActivityActivity)
+
+                                        // Bail out cleanly if the service is not bound yet
+                                        // (e.g. user dismissed the activity very quickly).
+                                        val binder = mainActivityActivity.sessionBinder
+                                        if (binder == null) {
+                                            return@apply
                                         }
-                                    },
-                                    navigationIcon = {
-                                        IconButton(onClick = {
-                                            scope.launch { drawerState.open() }
-                                        }) {
-                                            Icon(Icons.Default.Menu, null, tint = color)
+                                        val service = binder.getService()
+
+                                        val session = if (pendingCommand != null) {
+                                            val cmd = pendingCommand!!
+                                            service.currentSession.value = Pair(cmd.id, cmd.workingMode)
+                                            binder.getSession(cmd.id)
+                                                ?: binder.createSession(
+                                                    cmd.id,
+                                                    client,
+                                                    mainActivityActivity,
+                                                    workingMode = Settings.working_Mode,
+                                                )
+                                        } else {
+                                            val currentId = service.currentSession.value.first
+                                            binder.getSession(currentId)
+                                                ?: binder.createSession(
+                                                    currentId,
+                                                    client,
+                                                    mainActivityActivity,
+                                                    workingMode = Settings.working_Mode,
+                                                )
                                         }
-                                    },
-                                    actions = {
-                                        IconButton(onClick = {
-                                            showAddDialog = true
-                                        }) {
-                                            Icon(Icons.Default.Add,null, tint = color)
+
+                                        session.updateTerminalSessionClient(client)
+                                        attachSession(session)
+                                        setTerminalViewClient(client)
+                                        setTypeface(font)
+
+                                        post {
+                                            val color = getViewColor()
+
+                                            keepScreenOn = true
+                                            requestFocus()
+                                            isFocusableInTouchMode = true
+
+                                            if (Settings.terminal_theme == "Default") {
+                                                mEmulator?.mColors?.mCurrentColors?.apply {
+                                                    set(256, color)
+                                                    set(258, color)
+                                                }
+                                            } else {
+                                                mEmulator?.mColors?.reset()
+                                            }
+
+                                            val colorsFile = localDir().child("colors.properties")
+                                            if (colorsFile.exists() && colorsFile.isFile){
+                                                val props = Properties()
+                                                FileInputStream(colorsFile).use { input ->
+                                                    props.load(input)
+                                                }
+                                                TerminalColors.COLOR_SCHEME.updateWith(props)
+                                            }
                                         }
                                     }
-                                )
-                            }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                update = { terminalView ->
+                                    terminalView.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                                    terminalView.setTextSize(
+                                        dpToPx(
+                                            Settings.terminal_font_size.toFloat(),
+                                            context
+                                        )
+                                    )
+                                    terminalView.onScreenUpdated()
+                                    val color = getViewColor()
 
-                            val density = LocalDensity.current
-                            Column(modifier = Modifier.imePadding().navigationBarsPadding().padding(top = if (showToolbar.value){0.dp}else{
-                                with(density){
-                                    TopAppBarDefaults.windowInsets.getTop(density).toDp()
-                                }
-                            })) {
-                                AndroidView(
-                                    factory = { context ->
-                                        TerminalView(context, null).apply {
-                                            terminalView = WeakReference(this)
-                                            setTextSize(
-                                                dpToPx(
-                                                    Settings.terminal_font_size.toFloat(),
-                                                    context
-                                                )
-                                            )
-                                            val client = TerminalBackEnd(this, mainActivityActivity)
-
-                                            // Bail out cleanly if the service is not bound yet
-                                            // (e.g. user dismissed the activity very quickly).
-                                            val binder = mainActivityActivity.sessionBinder
-                                            if (binder == null) {
-                                                return@apply
-                                            }
-                                            val service = binder.getService()
-
-                                            val session = if (pendingCommand != null) {
-                                                val cmd = pendingCommand!!
-                                                service.currentSession.value = Pair(cmd.id, cmd.workingMode)
-                                                binder.getSession(cmd.id)
-                                                    ?: binder.createSession(
-                                                        cmd.id,
-                                                        client,
-                                                        mainActivityActivity,
-                                                        workingMode = Settings.working_Mode,
-                                                    )
-                                            } else {
-                                                val currentId = service.currentSession.value.first
-                                                binder.getSession(currentId)
-                                                    ?: binder.createSession(
-                                                        currentId,
-                                                        client,
-                                                        mainActivityActivity,
-                                                        workingMode = Settings.working_Mode,
-                                                    )
-                                            }
-
-                                            session.updateTerminalSessionClient(client)
-                                            attachSession(session)
-                                            setTerminalViewClient(client)
-                                            setTypeface(font)
-
-                                            post {
-                                                val color = getViewColor()
-
-                                                keepScreenOn = true
-                                                requestFocus()
-                                                isFocusableInTouchMode = true
-
-                                                if (Settings.terminal_theme == "Default") {
-                                                    mEmulator?.mColors?.mCurrentColors?.apply {
-                                                        set(256, color)
-                                                        set(258, color)
-                                                    }
-                                                } else {
-                                                    mEmulator?.mColors?.reset()
-                                                }
-
-                                                val colorsFile = localDir().child("colors.properties")
-                                                if (colorsFile.exists() && colorsFile.isFile){
-                                                    val props = Properties()
-                                                    FileInputStream(colorsFile).use { input ->
-                                                        props.load(input)
-                                                    }
-                                                    TerminalColors.COLOR_SCHEME.updateWith(props)
-                                                }
-                                            }
+                                    if (Settings.terminal_theme == "Default") {
+                                        terminalView.mEmulator?.mColors?.mCurrentColors?.apply {
+                                            set(256, color)
+                                            set(258, color)
                                         }
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .weight(1f),
-                                    update = { terminalView ->
-                                        terminalView.onScreenUpdated()
-                                        val color = getViewColor()
-
-                                        if (Settings.terminal_theme == "Default") {
-                                            terminalView.mEmulator?.mColors?.mCurrentColors?.apply {
-                                                set(256, color)
-                                                set(258, color)
-                                            }
-                                        } else {
-                                            terminalView.mEmulator?.mColors?.reset()
-                                        }
-                                    },
-                                )
+                                    } else {
+                                        terminalView.mEmulator?.mColors?.reset()
+                                    }
+                                },
+                            )
 
                                 if (showVirtualKeys.value){
                                     val pagerState = rememberPagerState(pageCount = { 2 })

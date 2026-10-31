@@ -8,10 +8,12 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -167,16 +169,31 @@ fun Settings(modifier: Modifier = Modifier,navController: NavController,mainActi
         }
 
 
-        PreferenceGroup {
-            SettingsToggle(
-                label = stringResource(strings.customizations),
-                showSwitch = false,
-                default = false,
-                sideEffect = {
-                   navController.navigate(MainActivityRoutes.Customization.route)
-            }, endWidget = {
-                Icon(imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null,modifier = Modifier.padding(16.dp))
-            })
+        PreferenceGroup(heading = stringResource(strings.terminal_appearance)) {
+            SettingsCard(
+                title = { Text(stringResource(strings.terminal_appearance)) },
+                description = { Text(stringResource(strings.terminal_appearance_desc)) },
+                startWidget = {
+                    Icon(
+                        painter = androidx.compose.ui.res.painterResource(id = com.rk.resources.drawables.ic_palette),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(start = 12.dp, end = 4.dp)
+                            .size(24.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                },
+                endWidget = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        contentDescription = null,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                },
+                onClick = {
+                    navController.navigate(MainActivityRoutes.Customization.route)
+                }
+            )
         }
 
         PreferenceGroup {

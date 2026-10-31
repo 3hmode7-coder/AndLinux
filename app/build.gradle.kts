@@ -30,13 +30,13 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file("testkey.keystore")
-            storePassword = "testkey"
-            keyAlias = "testkey"
-            keyPassword = "testkey"
+        create("debugConfig") {
+            storeFile = file("${rootDir}/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
         }
-        getByName("debug") {
+        create("release") {
             storeFile = file("testkey.keystore")
             storePassword = "testkey"
             keyAlias = "testkey"
@@ -59,6 +59,7 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-DEBUG"
+            signingConfig = signingConfigs.getByName("debugConfig")
             resValue("string", "app_name", "AndLinux")
         }
     }
@@ -71,20 +72,6 @@ android {
         versionName = "1.6"
         vectorDrawables {
             useSupportLibrary = true
-        }
-    }
-
-    flavorDimensions += "store"
-
-    productFlavors {
-        create("Fdroid") {
-            dimension = "store"
-            targetSdk = 28
-        }
-
-        create("PlayStore") {
-            dimension = "store"
-            targetSdk = 35
         }
     }
 

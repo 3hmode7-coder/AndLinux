@@ -112,6 +112,9 @@ private fun terminalUiPalette(name: String): TerminalUiPalette? = when (name) {
     "Material Dark" -> TerminalUiPalette(true, Color(0xFF212121), Color(0xFFEEFFFF), Color(0xFF82AAFF), Color(0xFF89DDFF), Color(0xFFC792EA), Color(0xFFF07178))
     "Ayu Dark" -> TerminalUiPalette(true, Color(0xFF0A0E14), Color(0xFFB3B1AD), Color(0xFF36A3D9), Color(0xFF95E6CB), Color(0xFFF07178), Color(0xFFFF3333))
     "Ayu Light" -> TerminalUiPalette(false, Color(0xFFFAFAFA), Color(0xFF5C6166), Color(0xFF41A6D9), Color(0xFF4DBF99), Color(0xFFF07178), Color(0xFFFF3333))
+    "Matrix" -> TerminalUiPalette(true, Color(0xFF0D1117), Color(0xFF39FF14), Color(0xFF00FF66), Color(0xFF2EA043), Color(0xFF56D364), Color(0xFFFF5555))
+    "Cyberpunk" -> TerminalUiPalette(true, Color(0xFF120458), Color(0xFF00F0FF), Color(0xFFFF007F), Color(0xFFFFE600), Color(0xFFFF0055), Color(0xFFFF3366))
+    "OLED Black" -> TerminalUiPalette(true, Color(0xFF000000), Color(0xFFE0E0E0), Color(0xFF64B5F6), Color(0xFF81C784), Color(0xFFFFB74D), Color(0xFFE57373))
     else -> null
 }
 

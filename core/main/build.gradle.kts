@@ -6,16 +6,9 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
-val gitCommitHash: Provider<String> =
-    providers.exec { commandLine("git", "rev-parse", "--short=8", "HEAD") }.standardOutput.asText.map { it.trim() }
-
-val fullGitCommitHash: Provider<String> =
-    providers.exec { commandLine("git", "rev-parse", "HEAD") }.standardOutput.asText.map { it.trim() }
-
-val gitCommitDate: Provider<String> =
-    providers.exec { commandLine("git", "show", "-s", "--format=%cI", "HEAD") }.standardOutput.asText.map { it.trim() }
-
-
+val gitCommitHash = "release"
+val fullGitCommitHash = "release"
+val gitCommitDate = "2025-01-01T00:00:00Z"
 
 android {
     namespace = "com.rk.terminal"
@@ -30,9 +23,9 @@ android {
 
     buildTypes {
         release {
-            buildConfigField("String", "GIT_COMMIT_HASH", "\"${fullGitCommitHash.get()}\"")
-            buildConfigField("String", "GIT_SHORT_COMMIT_HASH", "\"${gitCommitHash.get()}\"")
-            buildConfigField("String", "GIT_COMMIT_DATE", "\"${gitCommitDate.get()}\"")
+            buildConfigField("String", "GIT_COMMIT_HASH", "\"$fullGitCommitHash\"")
+            buildConfigField("String", "GIT_SHORT_COMMIT_HASH", "\"$gitCommitHash\"")
+            buildConfigField("String", "GIT_COMMIT_DATE", "\"$gitCommitDate\"")
 
             isMinifyEnabled = false
             isShrinkResources = false
@@ -41,9 +34,9 @@ android {
             )
         }
         debug{
-            buildConfigField("String", "GIT_COMMIT_HASH", "\"${fullGitCommitHash.get()}\"")
-            buildConfigField("String", "GIT_SHORT_COMMIT_HASH", "\"${gitCommitHash.get()}\"")
-            buildConfigField("String", "GIT_COMMIT_DATE", "\"${gitCommitDate.get()}\"")
+            buildConfigField("String", "GIT_COMMIT_HASH", "\"$fullGitCommitHash\"")
+            buildConfigField("String", "GIT_SHORT_COMMIT_HASH", "\"$gitCommitHash\"")
+            buildConfigField("String", "GIT_COMMIT_DATE", "\"$gitCommitDate\"")
         }
     }
 

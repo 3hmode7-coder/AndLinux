@@ -59,4 +59,12 @@
     <string name="shortcut_capture_title">Press a key combination</string>
     <string name="shortcut_capture_hint">Waiting for input…</string>
     <string name="shortcut_clear">Clear</string>
+    <string name="terminal_appearance">Terminal Appearance</string>
+    <string name="terminal_appearance_desc">Customize color palette, font size, and background opacity</string>
+    <string name="color_palette">Color Palette</string>
+    <string name="color_palette_desc">Choose a terminal color scheme</string>
+    <string name="background_opacity">Background Opacity</string>
+    <string name="background_opacity_desc">Adjust terminal backdrop transparency</string>
+    <string name="preview">Live Preview</string>
+    <string name="reset_defaults">Reset to Defaults</string>
 </resources>

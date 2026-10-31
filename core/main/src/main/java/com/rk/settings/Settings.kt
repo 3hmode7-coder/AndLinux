@@ -30,13 +30,29 @@ object Settings {
         get() = Preference.getInt(key = "default_night_mode", default = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         set(value) = Preference.setInt(key = "default_night_mode",value)
 
-    var terminal_font_size
-        get() = Preference.getInt(key = "terminal_font_size", default = 13)
-        set(value) = Preference.setInt(key = "terminal_font_size",value)
+    private val terminalBgOpacityState = mutableStateOf(Preference.getFloat(key = "terminal_background_opacity", default = 1.0f))
+    var terminal_background_opacity: Float
+        get() = terminalBgOpacityState.value
+        set(value) {
+            terminalBgOpacityState.value = value
+            Preference.setFloat(key = "terminal_background_opacity", value)
+        }
 
-    var wallTransparency
-        get() = Preference.getFloat(key = "wallTransparency", default = 0f)
-        set(value) = Preference.setFloat(key = "wallTransparency",value)
+    private val terminalFontSizeState = mutableStateOf(Preference.getInt(key = "terminal_font_size", default = 13))
+    var terminal_font_size: Int
+        get() = terminalFontSizeState.value
+        set(value) {
+            terminalFontSizeState.value = value
+            Preference.setInt(key = "terminal_font_size", value)
+        }
+
+    private val wallTransparencyState = mutableStateOf(Preference.getFloat(key = "wallTransparency", default = 0.85f))
+    var wallTransparency: Float
+        get() = wallTransparencyState.value
+        set(value) {
+            wallTransparencyState.value = value
+            Preference.setFloat(key = "wallTransparency", value)
+        }
 
     var working_Mode
         get() = Preference.getInt(key = "workingMode", default = WorkingMode.ALPINE)
